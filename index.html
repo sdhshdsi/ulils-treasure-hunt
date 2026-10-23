@@ -40,6 +40,22 @@ button, input {
 button {
   cursor: pointer;
 }
+#musicControl {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+}
+
+#musicToggleBtn {
+  padding: 10px 14px;
+  border: 2px solid #c69b5c;
+  border-radius: 8px;
+  background: #2a170e;
+  color: #f8e8c5;
+  font-size: 12px;
+  box-shadow: 0 3px 10px #0005;
+}
 
 button:focus-visible, input:focus-visible {
   outline: 2px solid var(--gold);
@@ -334,11 +350,16 @@ footer {
 </style>
 </head>
 
-
 <body>
 <audio id="introAudio" preload="auto">
   <source src="mine.mp3" type="audio/mpeg">
 </audio>
+
+<div id="musicControl">
+  <button id="musicToggleBtn" onclick="toggleMusic()">
+    ⏸ Pause Musik
+  </button>
+</div>
 
 <div id="app">
 
@@ -629,26 +650,50 @@ footer {
 <script>
   
 
+
 const introAudio = document.getElementById("introAudio");
 const playMusicBtn = document.getElementById("playMusicBtn");
 const musicNotice = document.getElementById("musicNotice");
+const musicToggleBtn = document.getElementById("musicToggleBtn");
 
 let musicStarted = false;
 
 async function startAdventure() {
-  if (musicStarted) return;
-
   try {
-    await introAudio.play();
+    if (!musicStarted || introAudio.ended) {
+      introAudio.currentTime = 0;
+      await introAudio.play();
+      musicStarted = true;
+    } else if (introAudio.paused) {
+      await introAudio.play();
+    }
 
-    musicStarted = true;
     playMusicBtn.textContent = "♫ Musik Sedang Diputar";
     musicNotice.textContent =
       "Petualangan dimulai! Musik akan menemanimu 🤎";
+    musicToggleBtn.textContent = "⏸ Pause Musik";
 
   } catch (error) {
     musicNotice.textContent =
-      "Musik belum bisa diputar. Coba tekan tombol lagi.";
+      "Musik belum bisa diputar. Coba tekan lagi.";
+    console.error("Audio error:", error);
+  }
+}
+
+async function toggleMusic() {
+  try {
+    if (introAudio.paused || introAudio.ended) {
+      if (introAudio.ended) {
+        introAudio.currentTime = 0;
+      }
+
+      await introAudio.play();
+      musicToggleBtn.textContent = "⏸ Pause Musik";
+    } else {
+      introAudio.pause();
+      musicToggleBtn.textContent = "▶ Lanjutkan Musik";
+    }
+  } catch (error) {
     console.error("Audio error:", error);
   }
 }
