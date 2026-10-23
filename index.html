@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ulil's Treasure Hunt 🏴‍☠️</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --dark: #24150f;
+  --brown: #48291b;
+  --brown2: #70472e;
+  --gold: #d7ad65;
+  --paper: #f0dfb9;
+  --ink: #392316;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--paper);
+  font-family: 'DM Sans', sans-serif;
+  background:
+    radial-gradient(ellipse at top, #684329 0%, transparent 65%),
+    linear-gradient(145deg, #1b100c, #382014 55%, #17100b);
+  background-attachment: fixed;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+#app {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 24px 16px 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.top {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.brand {
+  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 4px;
+}
+
+.scene {
+  display: none;
+  animation: appear .5s ease;
+}
+
+.scene.active {
+  display: block;
+}
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.paper {
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse at 15% 15%, #fff0c9 0%, transparent 45%),
+    linear-gradient(135deg, #e9d4a8, #f6e7c4 48%, #dfc397);
+  border: 5px double #a17a46;
+  border-radius: 8px;
+  padding: clamp(22px, 6vw, 46px);
+  box-shadow: 0 15px 40px #0008;
+  position: relative;
+  overflow: hidden;
+}
+
+.paper::after {
+  content: "✦";
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-size: 20px;
+  color: #a17a46;
+  opacity: .6;
+  pointer-events: none;
+}
+
+.symbol {
+  text-align: center;
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+h1, h2, h3 {
+  font-family: 'Cinzel', serif;
+  text-align: center;
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: clamp(23px, 5vw, 34px);
+  margin: 8px 0 15px;
+}
+
+h2 {
+  font-size: clamp(20px, 4vw, 28px);
+  margin-top: 0;
+}
+
+h3 {
+  font-size: 17px;
+}
+
+p {
+  line-height: 1.9;
+  font-size: 15px;
+}
+
+.subtitle {
+  text-align: center;
+  opacity: .85;
+  font-size: 13px;
+}
+
+.gold {
+  color: #875322;
+  font-weight: 700;
+}
+
+.code-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+  margin: 25px 0 12px;
+}
+
+.code-input {
+  min-width: 0;
+  width: 100%;
+  padding: 14px 2px;
+  text-align: center;
+  background: #fff0cf;
+  color: var(--ink);
+  border: 2px solid #b38a51;
+  border-radius: 6px;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.code-input:focus {
+  border-color: #69401f;
+}
+
+.code-input.wrong {
+  border-color: #a42f25;
+  background: #ffe2d8;
+}
+
+.code-input.right {
+  border-color: #547345;
+  background: #e6edcf;
+}
+
+.notice {
+  min-height: 28px;
+  font-size: 13px;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.notice.error {
+  color: #a12b1d;
+}
+
+.notice.success {
+  color: #416338;
+}
+
+.btn {
+  display: inline-block;
+  border: 2px solid #c69b5c;
+  border-radius: 6px;
+  padding: 12px 22px;
+  color: #f8e8c5;
+  background: linear-gradient(135deg, #60351e, #2a170e);
+  box-shadow: 0 4px 0 #1c100a;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  transition: transform .2s, opacity .2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.btn-light {
+  background: transparent;
+  color: var(--ink);
+  border-color: #9a7040;
+  box-shadow: none;
+}
+
+.center {
+  text-align: center;
+}
+
+.letter-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.letter-card {
+  min-width: 0;
+  padding: 18px 7px;
+  border: 2px solid #bd965c;
+  background: #e5cf9f;
+  color: var(--ink);
+  border-radius: 6px;
+  box-shadow: 0 5px 0 #aa8550;
+  transition: transform .2s;
+}
+
+.letter-card:hover {
+  transform: translateY(-5px) rotate(-1deg);
+}
+
+.letter-card .envelope {
+  font-size: 37px;
+}
+
+.letter-card h3 {
+  margin: 12px 0 5px;
+  font-size: 14px;
+}
+
+.letter-card small {
+  font-size: 11px;
+}
+
+.letter-card.read {
+  background: #cbb78c;
+  border-color: #718052;
+}
+
+.progress {
+  height: 5px;
+  background: #53341e;
+  border-radius: 5px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--gold);
+  transition: width .3s;
+}
+
+.final-title {
+  color: #78451f;
+  font-size: clamp(24px, 5vw, 38px);
+}
+
+.heart {
+  font-size: 34px;
+  animation: beat 1.2s infinite;
+  display: inline-block;
+}
+
+@keyframes beat {
+  50% { transform: scale(1.15); }
+}
+
+footer {
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #c5a574;
+  opacity: .8;
+  margin-top: 24px;
+}
+
+@media (max-width: 430px) {
+  #app { padding: 18px 12px 28px; }
+  .code-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .code-input { padding: 13px 1px; font-size: 18px; }
+  .letter-list { gap: 8px; }
+  .letter-card { padding: 15px 4px; }
+  .letter-card .envelope { font-size: 30px; }
+  .letter-card h3 { font-size: 12px; }
+  p { font-size: 14px; }
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+  <div class="top">
+    <div class="brand">☠ THE LAST TREASURE ☠</div>
+  </div>
+
+  <!-- HALAMAN 1: KODE -->
+  <section id="s1" class="scene active">
+    <div class="paper">
+      <div class="symbol">🏴‍☠️</div>
+      <h1>Kapten, Buktikan Dirimu!</h1>
+      <p class="subtitle">
+        Tujuh kode rahasia menunggumu.<br>
+        Masukkan semuanya dengan urutan yang benar
+        untuk menemukan harta karun terakhir.
+      </p>
+
+      <div class="code-grid" id="codeGrid"></div>
+      <div id="codeNotice" class="notice" aria-live="polite">
+        ⚓ Petualangan terakhirmu dimulai di sini.
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="checkBtn" onclick="checkCodes()">
+          ⚓ Buka Peti
+        </button>
+        <button class="btn" id="toTreasure" disabled
+          onclick="showScene('s2')">
+          Lanjut ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALAMAN 2: HARTA KARUN -->
+  <section id="s2" class="scene">
+    <div class="paper">
+      <div class="symbol">💰</div>
+      <h1>Selamat, Penjelajah!</h1>
+
+      <p>Selamattt, kamu berhasil nemuin harta karun terakhir! 🏴‍☠️</p>
+
+      <p>Tapi setelah perjalanan sejauh ini, kamu mungkin bakal sadar kalau harta karunnya bukan emas, permata, atau benda mahal lainnya.</p>
+
+      <p>Ada seseorang yang sengaja nyiapin semua ini buat kamu. Mulai dari teka-teki kecil, kotak-kotak misterius, sampai pesan yang sekarang lagi kamu baca.</p>
+
+      <p>Mungkin hadiahnya nggak seberapa dibanding banyak hal yang ada di dunia, tapi aku berharap kamu bisa ngerasain kalau setiap bagiannya dibuat dengan penuh pikiran dan usaha.</p>
+
+      <p>Karena kadang, hal yang paling berharga bukan sesuatu yang bisa kita simpan di dalam peti, tapi sesuatu yang bikin kita senyum setiap kali mengingatnya. 🤍</p>
+
+      <div class="actions">
+        <button class="btn" onclick="showScene('s3')">
+          Buka Pesan Berikutnya ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALAMAN 3: UCAPAN UNTUK ULIL -->
+  <section id="s3" class="scene">
+    <div class="paper">
+      <div class="symbol">🧭</div>
+      <h1>Untuk Kapten Kesayanganku</h1>
+
+      <p>Hai, Ulil Sayangku.</p>
+
+      <p>Kalau kamu lagi baca surat ini, berarti kamu udah berhasil ngelewatin semua petunjuk yang aku siapin. Gimana? Susah nggak? wgwg.</p>
+
+      <p>Aku nggak tahu nanti kita bakal ada di titik mana beberapa tahun dari sekarang. Kita bakal sesibuk apa, bakal punya kesibukan masing-masing seperti apa, atau bakal nemuin hal-hal baru apa di perjalanan kita.</p>
+
+      <p>Tapi aku berharap, di antara banyaknya hal yang bakal kita temuin nanti, kita masih punya banyak cerita buat dikenang, ada satu sama lain untuk bersandar, dan selalu ingat ada yang selalu nunggu untuk hidup bersama selamanya.</p>
+
+      <p>Aku pengin kita sama-sama tumbuh, belajar dari banyak hal, ngejar apa yang kita mau, dan punya banyak pengalaman yang suatu hari nanti bisa kita ceritain lagi sambil ketawa.</p>
+
+      <p>Jadi, kalau suatu saat kamu nemuin surat ini lagi, semoga kamu masih ingat kalau hari ini ada seseorang yang pengin bikin ulang tahunmu terasa sedikit lebih spesial.</p>
+
+      <p>Selamat ulang tahun, yaa. Semoga banyak hal baik yang datang ke hidupmu. 🤍</p>
+
+      <div class="actions">
+        <button class="btn" onclick="showScene('s4')">
+          Temukan Surat Rahasia ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALAMAN 4: PILIH SURAT -->
+  <section id="s4" class="scene">
+    <div class="paper">
+      <div class="symbol">✉️</div>
+      <h2>Surat dari Harta Karunmu</h2>
+
+      <p class="center">
+        Ada tiga surat yang aku siapin buat kamu.
+        Buka satu per satu, ya, Kapten.
+      </p>
+
+      <div class="progress">
+        <div id="progressFill" class="progress-fill"></div>
+      </div>
+      <p id="readCount" class="subtitle">0 dari 3 surat telah dibaca</p>
+
+      <div class="letter-list">
+        <button class="letter-card" id="card1"
+          onclick="openLetter(1)">
+          <div class="envelope">💌</div>
+          <h3>Surat 1</h3>
+          <small id="status1">Belum dibuka</small>
+        </button>
+
+        <button class="letter-card" id="card2"
+          onclick="openLetter(2)">
+          <div class="envelope">💌</div>
+          <h3>Surat 2</h3>
+          <small id="status2">Belum dibuka</small>
+        </button>
+
+        <button class="letter-card" id="card3"
+          onclick="openLetter(3)">
+          <div class="envelope">💌</div>
+          <h3>Surat 3</h3>
+          <small id="status3">Belum dibuka</small>
+        </button>
+      </div>
+
+      <div class="actions">
+        <button class="btn" id="endingBtn" disabled
+          onclick="showScene('s8')">
+          Buka Ending Terakhir ➜
+        </button>
+      </div>
+
+      <p id="letterNotice" class="notice">
+        Baca ketiga surat untuk membuka ending terakhir 🤎
+      </p>
+    </div>
+  </section>
+
+  <!-- SURAT 1 -->
+  <section id="s5" class="scene">
+    <div class="paper">
+      <div class="symbol">📝</div>
+      <h2>Surat 1 — Hal yang Ingin Kusampaikan</h2>
+
+      <p>Aku nggak selalu jago nyampein sesuatu lewat kata-kata. Kadang aku bisa bingung sendiri mau ngomong apa, padahal sebenarnya ada banyak hal yang pengin aku sampein.</p>
+
+      <p>Jadi, lewat surat ini aku cuma mau bilang kalau aku menghargai usaha kamu, hal-hal kecil yang kamu lakuin, dan waktu yang udah kita lewatin bareng.</p>
+
+      <p class="center">Terima kasih sudah jadi bagian dari ceritaku. 🤎</p>
+
+      <div class="actions">
+        <button class="btn btn-light" onclick="showScene('s4')">
+          ← Kembali ke Surat
+        </button>
+        <button class="btn" onclick="showScene('s6')">
+          Lanjut ke Surat 2 ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SURAT 2 -->
+  <section id="s6" class="scene">
+    <div class="paper">
+      <div class="symbol">🌅</div>
+      <h2>Surat 2 — Cerita yang Akan Datang</h2>
+
+      <p>Dari sekian banyak hal yang terjadi, pasti ada aja momen kecil yang kelihatannya biasa, tapi ternyata bikin seneng kalau diingat lagi.</p>
+
+      <p>Aku harap nanti kita punya lebih banyak cerita kayak gitu. Nggak harus selalu sesuatu yang besar atau istimewa. Hal sederhana juga bisa jadi kenangan yang menyenangkan, kan?</p>
+
+      <p>Di umur yang baru ini, semoga kamu makin dekat sama hal-hal yang pengin kamu capai. Semoga kamu dikasih banyak kesempatan baik, ketemu orang-orang baik, dan tetap punya semangat buat jalanin apa yang kamu pilih.</p>
+
+      <p>Kalau nanti ada hari yang nggak berjalan sesuai rencana, semoga kamu tetap bisa nemuin alasan buat mencoba lagi. Kamu nggak harus langsung punya semua jawabannya sekarang.</p>
+
+      <p class="center">Pelan-pelan aja, ya. Aku harap banyak hal baik menunggumu di depan sana. 🤍</p>
+
+      <div class="actions">
+        <button class="btn btn-light" onclick="showScene('s4')">
+          ← Kembali ke Surat
+        </button>
+        <button class="btn" onclick="showScene('s7')">
+          Lanjut ke Surat 3 ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SURAT 3 -->
+  <section id="s7" class="scene">
+    <div class="paper">
+      <div class="symbol">🏴‍☠️</div>
+      <h2>Surat 3 — Harta Karun Sebenarnya</h2>
+
+      <p>Petualangan ini selesai sampai di sini, tapi bukan berarti ceritanya ikut selesai.</p>
+
+      <p>Enam kotak, enam petunjuk, dan satu harta karun yang akhirnya berhasil kamu temuin. Kalau dipikir-pikir, lumayan juga ya usaha buat buka hadiah ulang tahun sendiri WKWKWK.</p>
+
+      <p>Tapi ternyata, masih ada satu harta karun terakhir yang belum kamu temuin.</p>
+
+      <p>Kali ini nggak ada kode rahasia, nggak ada teka-teki, dan nggak perlu nyari ke mana-mana lagi.</p>
+
+      <p>Karena harta karun terakhirnya...</p>
+
+      <h2 class="gold">AKU WKWKWKWK 😭💗</h2>
+
+      <p>Selamat ulang tahun, yaa, Ulil. Semoga kamu suka sama petualangan kecil yang udah aku siapin ini. Makasih udah jadi bagian dari cerita hidupku. Semoga ke depannya kita masih bisa bikin banyak cerita baru bareng-bareng.</p>
+
+      <p>Oh iya, jangan seneng dulu. Aku emang harta karun, tapi bukan berarti kamu boleh berhenti usaha buat dapetin aku WKWKWK. 🏴‍☠️💋</p>
+
+      <div class="actions">
+        <button class="btn btn-light" onclick="showScene('s4')">
+          ← Kembali ke Surat
+        </button>
+        <button class="btn" onclick="showScene('s4'); unlockEnding()">
+          Aku Sudah Baca! ➜
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HALAMAN 8: ENDING -->
+  <section id="s8" class="scene">
+    <div class="paper center">
+      <div class="symbol">💖</div>
+
+      <h1 class="final-title">
+        Selamat Ulang Tahun
+      </h1>
+
+      <h2>Ulil My Beloved</h2>
+
+      <div class="heart">🤎</div>
+
+      <p>
+        And Happy Anniversary
+      </p>
+
+      <p>
+        Dari semua harta karun di dunia,
+        semoga kita selalu punya alasan untuk
+        saling menemukan, saling mendukung,
+        dan membuat cerita baru bersama.
+      </p>
+
+      <p>
+        Makasih udah hadir di hidupku, Ulil.
+        Semoga perjalananmu ke depan dipenuhi
+        banyak kebahagiaan, kesempatan baik,
+        dan hal-hal yang bikin kamu tersenyum.
+      </p>
+
+      <p>
+        <strong>With love, from your favorite treasure. 💋</strong>
+      </p>
+
+      <div style="font-size:36px; margin-top:20px">
+        🏴‍☠️ ⚓ 💌 ⚓ 🏴‍☠️
+      </div>
+
+      <p class="subtitle">
+        THE END OF THIS QUEST,<br>
+        THE BEGINNING OF MORE MEMORIES.
+      </p>
+
+      <div class="actions">
+        <button class="btn" onclick="showScene('s4')">
+          Baca Surat Lagi ↻
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer>MADE WITH LOVE • ONE TREASURE, ONE STORY</footer>
+</div>
+
+<script>
+// Tujuh kode rahasia, sesuai urutan.
+const secretCodes = [
+  "114", "227", "110", "111",
+  "223", "999", "226"
+];
+
+const codeGrid = document.getElementById("codeGrid");
+
+secretCodes.forEach((code, index) => {
+  const input = document.createElement("input");
+  input.className = "code-input";
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.maxLength = 3;
+  input.autocomplete = "off";
+  input.placeholder = "•••";
+  input.setAttribute("aria-label", "Kode rahasia " + (index + 1));
+
+  input.addEventListener("input", () => {
+    input.value = input.value.replace(/\D/g, "").slice(0, 3);
+    input.classList.remove("wrong", "right");
+
+    document.getElementById("codeNotice").textContent =
+      "⚓ Masukkan semua kode, lalu tekan Buka Peti.";
+    document.getElementById("codeNotice").className = "notice";
+
+    document.getElementById("toTreasure").disabled = true;
+
+    if (input.value.length === 3) {
+      const next = codeGrid.children[index + 1];
+      if (next) next.focus();
+    }
+  });
+
+  input.addEventListener("keydown", event => {
+    if (event.key === "Backspace" && input.value === "") {
+      const prev = codeGrid.children[index - 1];
+      if (prev) prev.focus();
+    }
+  });
+
+  codeGrid.appendChild(input);
+});
+
+function checkCodes() {
+  const inputs = [...codeGrid.querySelectorAll("input")];
+  const notice = document.getElementById("codeNotice");
+  const nextBtn = document.getElementById("toTreasure");
+
+  let allCorrect = true;
+
+  inputs.forEach((input, index) => {
+    const correct = input.value === secretCodes[index];
+
+    input.classList.toggle("right", correct);
+    input.classList.toggle("wrong", !correct);
+
+    if (!correct) allCorrect = false;
+  });
+
+  if (allCorrect) {
+    notice.textContent =
+      "🏆 SEMUA KODE BENAR! Harta karun berhasil ditemukan!";
+    notice.className = "notice success";
+    nextBtn.disabled = false;
+    document.getElementById("checkBtn").disabled = true;
+  } else {
+    notice.textContent =
+      "☠ Ada kode yang salah atau belum lengkap. Coba periksa lagi, Kapten!";
+    notice.className = "notice error";
+    nextBtn.disabled = true;
+  }
+}
+
+function showScene(id) {
+  document.querySelectorAll(".scene").forEach(scene => {
+    scene.classList.remove("active");
+  });
+
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+const readLetters = new Set();
+
+function openLetter(number) {
+  readLetters.add(number);
+  updateLetterProgress();
+  showScene("s" + (number + 4));
+}
+
+function updateLetterProgress() {
+  const count = readLetters.size;
+
+  document.getElementById("progressFill").style.width =
+    (count / 3 * 100) + "%";
+
+  document.getElementById("readCount").textContent =
+    count + " dari 3 surat telah dibaca";
+
+  readLetters.forEach(number => {
+    document.getElementById("card" + number).classList.add("read");
+    document.getElementById("status" + number).textContent =
+      "✓ Sudah dibaca";
+  });
+
+  document.getElementById("endingBtn").disabled = count !== 3;
+
+  document.getElementById("letterNotice").textContent =
+    count === 3
+      ? "💖 Semua surat sudah dibaca! Ending terakhir menunggumu."
+      : "Baca ketiga surat untuk membuka ending terakhir 🤎";
+}
+
+function unlockEnding() {
+  // Surat 3 dianggap sudah dibaca sebelum kembali ke menu.
+  readLetters.add(3);
+  updateLetterProgress();
+}
+</script>
+</body>
+</html>
