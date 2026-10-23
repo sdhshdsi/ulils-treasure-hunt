@@ -334,57 +334,21 @@ footer {
 </style>
 </head>
 
+
 <body>
+<audio id="introAudio" preload="auto">
+  <source src="mine.mp3" type="audio/mpeg">
+</audio>
+
 <div id="app">
-  
-  <!-- HALAMAN PEMBUKA: MUSIK -->
-  <section id="musicScene" class="scene active">
-    <div class="paper center">
-      <div class="symbol">🎶</div>
 
-      <h1>Before the Adventure Begins</h1>
-
-      <p>
-        Sebelum kamu menemukan harta karun terakhir,
-        ada satu lagu yang ingin kuperdengarkan untukmu.
-      </p>
-
-      <h2 class="gold">Mine ♡</h2>
-
-      <p class="subtitle">
-        A little song before our next adventure.
-      </p>
-
-      <audio id="introAudio" preload="metadata">
-        <source src="mine.mp3" type="audio/mpeg">
-        Browser kamu tidak mendukung pemutar audio.
-      </audio>
-
-      <div class="actions">
-        <button class="btn" id="playMusicBtn"
-          onclick="playIntroMusic()">
-          ♫ Putar Lagu
-        </button>
-
-        <button class="btn" id="continueBtn"
-          disabled onclick="showScene('s1')">
-          Mulai Petualangan ➜
-        </button>
-      </div>
-
-      <p id="musicNotice" class="notice" aria-live="polite">
-        Dengarkan lagunya sampai selesai sebelum melanjutkan 🤎
-      </p>
-    </div>
-  </section>
 
   <div class="top">
     <div class="brand">☠ THE LAST TREASURE ☠</div>
   </div>
 
   <!-- HALAMAN 1: KODE -->
-  <section id="s1" class="scene active">
-    <section id="s1" class="scene">
+    <section id="s1" class="scene active">
     <div class="paper">
       <div class="symbol">🏴‍☠️</div>
       <h1>Kapten, Buktikan Dirimu!</h1>
@@ -394,6 +358,15 @@ footer {
         untuk menemukan harta karun terakhir.
       </p>
 
+      <div class="center">
+      <button class="btn" id="playMusicBtn" onclick="startAdventure()">
+        ♫ Putar Musik & Mulai Petualangan
+      </button>
+      <p id="musicNotice" class="notice" aria-live="polite">
+        Tekan tombol untuk memulai petualangan dengan musik 🤎
+      </p>
+    </div>
+      
       <div class="code-grid" id="codeGrid"></div>
       <div id="codeNotice" class="notice" aria-live="polite">
         ⚓ Petualangan terakhirmu dimulai di sini.
@@ -655,30 +628,30 @@ footer {
 
 <script>
   
+
 const introAudio = document.getElementById("introAudio");
 const playMusicBtn = document.getElementById("playMusicBtn");
-const continueBtn = document.getElementById("continueBtn");
 const musicNotice = document.getElementById("musicNotice");
 
-async function playIntroMusic() {
+let musicStarted = false;
+
+async function startAdventure() {
+  if (musicStarted) return;
+
   try {
     await introAudio.play();
 
-    playMusicBtn.textContent = "♫ Lagu Sedang Diputar";
+    musicStarted = true;
+    playMusicBtn.textContent = "♫ Musik Sedang Diputar";
     musicNotice.textContent =
-      "Nikmati lagunya, Kapten. Petualangan menunggu 🤎";
+      "Petualangan dimulai! Musik akan menemanimu 🤎";
+
   } catch (error) {
     musicNotice.textContent =
-      "Lagu belum bisa diputar. Periksa file audio dan coba lagi.";
+      "Musik belum bisa diputar. Coba tekan tombol lagi.";
+    console.error("Audio error:", error);
   }
 }
-
-introAudio.addEventListener("ended", () => {
-  playMusicBtn.textContent = "♫ Lagu Selesai";
-  continueBtn.disabled = false;
-  musicNotice.textContent =
-    "Lagu selesai! Sekarang waktunya menemukan harta karun ⚓";
-});
 
 // Tujuh kode rahasia, sesuai urutan.
 const secretCodes = [
