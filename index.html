@@ -336,6 +336,47 @@ footer {
 
 <body>
 <div id="app">
+  
+  <!-- HALAMAN PEMBUKA: MUSIK -->
+  <section id="musicScene" class="scene active">
+    <div class="paper center">
+      <div class="symbol">🎶</div>
+
+      <h1>Before the Adventure Begins</h1>
+
+      <p>
+        Sebelum kamu menemukan harta karun terakhir,
+        ada satu lagu yang ingin kuperdengarkan untukmu.
+      </p>
+
+      <h2 class="gold">Mine ♡</h2>
+
+      <p class="subtitle">
+        A little song before our next adventure.
+      </p>
+
+      <audio id="introAudio" preload="metadata">
+        <source src="mine.mp3" type="audio/mpeg">
+        Browser kamu tidak mendukung pemutar audio.
+      </audio>
+
+      <div class="actions">
+        <button class="btn" id="playMusicBtn"
+          onclick="playIntroMusic()">
+          ♫ Putar Lagu
+        </button>
+
+        <button class="btn" id="continueBtn"
+          disabled onclick="showScene('s1')">
+          Mulai Petualangan ➜
+        </button>
+      </div>
+
+      <p id="musicNotice" class="notice" aria-live="polite">
+        Dengarkan lagunya sampai selesai sebelum melanjutkan 🤎
+      </p>
+    </div>
+  </section>
 
   <div class="top">
     <div class="brand">☠ THE LAST TREASURE ☠</div>
@@ -343,6 +384,7 @@ footer {
 
   <!-- HALAMAN 1: KODE -->
   <section id="s1" class="scene active">
+    <section id="s1" class="scene">
     <div class="paper">
       <div class="symbol">🏴‍☠️</div>
       <h1>Kapten, Buktikan Dirimu!</h1>
@@ -612,6 +654,32 @@ footer {
 </div>
 
 <script>
+  
+const introAudio = document.getElementById("introAudio");
+const playMusicBtn = document.getElementById("playMusicBtn");
+const continueBtn = document.getElementById("continueBtn");
+const musicNotice = document.getElementById("musicNotice");
+
+async function playIntroMusic() {
+  try {
+    await introAudio.play();
+
+    playMusicBtn.textContent = "♫ Lagu Sedang Diputar";
+    musicNotice.textContent =
+      "Nikmati lagunya, Kapten. Petualangan menunggu 🤎";
+  } catch (error) {
+    musicNotice.textContent =
+      "Lagu belum bisa diputar. Periksa file audio dan coba lagi.";
+  }
+}
+
+introAudio.addEventListener("ended", () => {
+  playMusicBtn.textContent = "♫ Lagu Selesai";
+  continueBtn.disabled = false;
+  musicNotice.textContent =
+    "Lagu selesai! Sekarang waktunya menemukan harta karun ⚓";
+});
+
 // Tujuh kode rahasia, sesuai urutan.
 const secretCodes = [
   "114", "227", "110", "111",
